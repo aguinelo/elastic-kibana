@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  elastic:
+    image: elasticsearch:8.7.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      -  ELASTIC_PASSWORD=q1w2e3
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ./data/elastic:/usr/share/elasticsearch/data
+    ports: 
+      - "9200:9200"
+
+  kibana:
+    depends_on:
+      - elastic
+    image: kibana:8.7.0
+    volumes:
+      - ./data/kibana:/usr/share/kibana/data
+    ports:
+      - 5601:5601
+    links:
+      - elastic
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elastic:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=q1w2e3
+    
+    
